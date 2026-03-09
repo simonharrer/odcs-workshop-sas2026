@@ -4,25 +4,26 @@ Open the [Data Contract Editor](https://editor.datacontract.com) for all steps b
 
 ## Getting Started
 
-1. Define a data contract for the data under [`orders_v1`](/data/orders_v1/) on databricks (catalog: `sas2026`, schema: `orders_v1`)
-2. Add the two objects `orders` and `line_items` with all their properties and logical types
-3. Run the tests, and fix any wrong types
-4. Verify tests can also fail: change `physicalType` of `customerEmailAddress` to `integer` (or remove a column), then run the tests again. Revert afterwards.
+1. Go to [editor.datacontract.com](https://editor.datacontract.com) and create a new data contract
+2. Set up the server connection: type `databricks`, catalog `sas2026`, schema `orders_v1`
+3. Look at the data under [`orders_v1`](/data/orders_v1/) and add the two objects `orders` and `line_items` with all their properties and logical types
+4. Run the tests, and fix any wrong types
+5. Verify tests can also fail: change `physicalType` of `customer_email_address` to `integer` (or remove a column), then run the tests again. Revert afterwards.
 
 ## Enrich the Contract
 
 Make sure all tests pass before continuing, then:
 
-5. Set `version` to `1.0.0` and `status` to `active`
-6. Add a `description` with `purpose` (e.g., "Order data for analytics and reporting") and `limitations`
-7. Add `tags`, e.g., `['orders', 'ecommerce']`
-8. Mark `customer_email_address` with `classification: confidential` (it's PII)
-9. Add `examples` for `customer_email_address` based on the JSON data files, e.g., `examples: ['test394@example.org']`
-10. Make `customer_email_address` a required field: `required: true` — run the tests again
+6. Set `version` to `1.0.0` and `status` to `active`
+7. Add a `description` with `purpose` (e.g., "Order data for analytics and reporting") and `limitations`
+8. Add `tags`, e.g., `['orders', 'ecommerce']`
+9. Mark `customer_email_address` with `classification: confidential` (it's PII)
+10. Add `examples` for `customer_email_address` based on the JSON data files, e.g., `examples: ['test394@example.org']`
+11. Make `customer_email_address` a required field: `required: true` — run the tests again
 
 ## Define Relationships
 
-11. Add a `relationship` from `line_items.order_id` to `orders.order_id` to express the foreign key
+12. Add a `relationship` from `line_items.order_id` to `orders.order_id` to express the foreign key
 
     ```yaml
     relationships:
@@ -32,17 +33,17 @@ Make sure all tests pass before continuing, then:
 
 ## Add Quality Checks
 
-12. Add a SQL quality check to ensure that `customer_email_address` contains an `@` sign (find invalid rows):
+13. Add a SQL quality check to ensure that `customer_email_address` contains an `@` sign (find invalid rows):
 
     ```yaml
     quality:
       - type: sql
         description: Ensure email addresses are valid
-        query: SELECT COUNT(*) FROM orders WHERE customer_email_address NOT LIKE '%@%';
+        query: SELECT COUNT(*) FROM orders_v1.orders WHERE customer_email_address NOT LIKE '%@%';
         mustBe: 0
     ```
 
-13. Add more constraints (if time allows):
+14. Add more constraints (if time allows):
     - Every `order_id` in `line_items` must exist in `orders`
     - `order_total` must be greater than or equal to 0
     - Think of your own additional constraints
@@ -66,7 +67,7 @@ Make sure all tests pass before continuing, then:
 
 ## Add Ownership
 
-14. Add a `team` and `support` channel:
+15. Add a `team` and `support` channel:
 
     ```yaml
     team:
@@ -82,7 +83,7 @@ Make sure all tests pass before continuing, then:
 
 ## Add SLA Properties
 
-15. Define service-level expectations:
+16. Define service-level expectations:
 
     ```yaml
     slaProperties:
