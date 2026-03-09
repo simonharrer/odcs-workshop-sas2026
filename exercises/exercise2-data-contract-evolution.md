@@ -4,9 +4,9 @@ Open the [Data Contract Editor](https://editor.datacontract.com) for all steps b
 
 ## Create v2
 
-Save your data contract from [Exercise 1](exercise1-put-your-data-under-contract.md) as `orders_v1.odcs.yaml` locally. Then copy it to `orders_v2.odcs.yaml` and open it in the editor.
+Save your data contract from [Exercise 1](exercise1-put-your-data-under-contract.md) as `orders_v1.odcs.yaml` locally (use the save button on the top right; use the hamburger menu to load files). Then copy it to `orders_v2.odcs.yaml` and open it in the editor.
 
-1. Introduce a new major version where the column `quantity` is added to the [`line_items`](/data/orders_v2/line_items.json) table. It defaults to 1, but is still a breaking change for data consumers.
+1. Introduce a new major version where the column `quantity` is added to the [`line_items`](/data/orders_v2/line_items.json) table. It defaults to 1, but is still a breaking change for data consumers — any downstream pipeline or report that relies on a fixed set of columns will need to be updated.
    - Update the ID to `..._v2`
    - Update the db-schema to [`..._v2`](/data/orders_v2/) (catalog: `sas2026`, schema: `orders_v2`)
    - Set `status` to `draft`
