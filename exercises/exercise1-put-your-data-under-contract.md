@@ -1,48 +1,111 @@
-# Put your data under contract
+# Put Your Data Under Contract
 
-1. Define a data contract for the data under [`orders-v1`](/data/orders-v1/) on postgres database
-2. Add the two tables `orders` and `line_items`. And all the properties with logical types.
-3. Run the tests in the Data Contract Editor, and fix the wrong types
-4. Change physicalType in customerEmailAddress to integer, or remove a column, and run the tests again to see that they can fail as well
-5. Make the following changes (but before you do this, make sure all tests run correctly!)
-   - set version to "1.0.0"
-   - set status to "active"
-   - Add examples for customer email address based on `data/*.json` via `examples: [...]`
-   - Make customer email address a required field `required: true` and test again
-   - Add a SQL quality check to ensure that the customer email address is valid (`NOT LIKE '%@%'`) and test again
-   - add more constraints (if time allows it)
-       - for every order_id in line item, there must exist an order_id in the orders table
-       - order_total must be greater than or equal to 0
-       - think of additional own constraints or things you want to add
+Open the [Data Contract Editor](https://editor.datacontract.com) for all steps below.
 
-    Documentation: https://bitol-io.github.io/open-data-contract-standard/latest/#sql
-    
-    Reference for quality checks:
-    
+## Getting Started
+
+1. Define a data contract for the data under [`orders-v1`](/data/orders-v1/) on a postgres database
+2. Add the two objects `orders` and `line_items` with all their properties and logical types
+3. Run the tests, and fix any wrong types
+4. Verify tests can also fail: change `physicalType` of `customerEmailAddress` to `integer` (or remove a column), then run the tests again. Revert afterwards.
+
+## Enrich the Contract
+
+Make sure all tests pass before continuing, then:
+
+5. Set `version` to `1.0.0` and `status` to `active`
+6. Add a `description` with `purpose` (e.g., "Order data for analytics and reporting") and `limitations`
+7. Add `tags`, e.g., `['orders', 'ecommerce']`
+8. Mark `customer_email_address` with `classification: confidential` (it's PII)
+9. Add `examples` for `customer_email_address` based on the JSON data files, e.g., `examples: ['test394@example.org']`
+10. Make `customer_email_address` a required field: `required: true` — run the tests again
+
+## Define Relationships
+
+11. Add a `relationship` from `line_items.order_id` to `orders.order_id` to express the foreign key
+
+    ```yaml
+    relationships:
+      - to: orders.order_id
     ```
-      properties:
+
+## Add Quality Checks
+
+12. Add a SQL quality check to ensure that `customer_email_address` contains an `@` sign (find invalid rows):
+
+    ```yaml
+    quality:
+      - type: sql
+        description: Ensure email addresses are valid
+        query: SELECT COUNT(*) FROM orders WHERE customer_email_address NOT LIKE '%@%';
+        mustBe: 0
+    ```
+
+13. Add more constraints (if time allows):
+    - Every `order_id` in `line_items` must exist in `orders`
+    - `order_total` must be greater than or equal to 0
+    - Think of your own additional constraints
+
+    Reference for quality checks:
+
+    ```yaml
+    properties:
       - name: field
         quality:
           - type: text
             description: Ensure that ...
           - type: sql
             description: Ensure that ...
-            query: SELECT COUNT(*) FROM ... WHERE ...; 
+            query: SELECT COUNT(*) FROM ... WHERE ...;
             mustBe: 0
             # mustBeGreaterThan: 0
     ```
 
-Bonus:
+    Documentation: https://bitol-io.github.io/open-data-contract-standard/latest/#sql
 
-- Use the **export** command to create an HTML documentation of the data contract. 
-```
-datacontract export --format html orders-v1.odcs.yaml > orders-v1.odcs.html
-```
+## Add Ownership
 
-- Export to SQL DDL [exports](https://cli.datacontract.com/#export)
+14. Add a `team` and `support` channel:
 
-```
-datacontract export --format sql orders-v1.odcs.yaml
-```
-- Use the **catalog** command to create a data contract catalog.
-   - Command: `datacontract catalog`
+    ```yaml
+    team:
+      name: Order Data Team
+      members:
+        - username: owner@example.com
+          role: Owner
+
+    support:
+      - channel: "#order-data-help"
+        tool: slack
+    ```
+
+## Add SLA Properties
+
+15. Define service-level expectations:
+
+    ```yaml
+    slaProperties:
+      - property: retention
+        value: 1
+        unit: y
+        description: Order data retained for 1 year
+      - property: frequency
+        value: 1
+        unit: d
+        description: Data updated daily
+    ```
+
+## Bonus
+
+- Use the **export** command to create an HTML documentation of the data contract:
+  ```
+  datacontract export --format html orders-v1.odcs.yaml > orders-v1.odcs.html
+  ```
+- Export to SQL DDL ([exports](https://cli.datacontract.com/#export)):
+  ```
+  datacontract export --format sql orders-v1.odcs.yaml
+  ```
+- Use the **catalog** command to create a data contract catalog:
+  ```
+  datacontract catalog
+  ```

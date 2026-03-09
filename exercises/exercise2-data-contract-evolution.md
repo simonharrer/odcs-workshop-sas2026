@@ -1,13 +1,23 @@
 # Data Contract Evolution
 
-1. Introduce a new major version where the column “quantity” is introduced in the [`line_items`](/data/orders-v2/line_items.json) table. It defaults to 1, but is still a breaking change for the data consumers.
-  - New file `...-v2`
-  - New ID `...-v2`
-  - New db-schema [`...-v2`](/data/orders-v2/)
-  - Set status to `draft`
-  - Add property `quantity`
-2. Run the tests
-3. Play the migration path in your head
-  - deprecate v1
-  - phase in v2
-  - retire v1
+Open the [Data Contract Editor](https://editor.datacontract.com) for all steps below.
+
+## Create v2
+
+Use your `orders-v1.odcs.yaml` from [Exercise 1](exercise1-put-your-data-under-contract.md) as the starting point.
+
+1. Introduce a new major version where the column `quantity` is added to the [`line_items`](/data/orders-v2/line_items.json) table. It defaults to 1, but is still a breaking change for data consumers.
+   - Create a new file `orders-v2.odcs.yaml` based on your v1 contract
+   - Update the ID to `...-v2`
+   - Update the db-schema to [`...-v2`](/data/orders-v2/)
+   - Set `status` to `draft`
+   - Add the `quantity` property to `line_items`
+2. Run the tests and make sure they pass
+
+## Plan the Migration
+
+3. Think through the lifecycle of v1 and v2:
+   - Set v1 status to `deprecated` and add an `endOfSupport` SLA property with a concrete date
+   - Set v2 status to `active` once consumers have been notified
+   - Eventually set v1 status to `retired`
+   - Who needs to be informed? How would the `support` channels from exercise 1 help here?
