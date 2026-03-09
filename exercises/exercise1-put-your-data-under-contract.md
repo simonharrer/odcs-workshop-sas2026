@@ -4,7 +4,7 @@ Open the [Data Contract Editor](https://editor.datacontract.com) for all steps b
 
 ## Getting Started
 
-1. Define a data contract for the data under [`orders-v1`](/data/orders-v1/) on a postgres database
+1. Define a data contract for the data under [`orders_v1`](/data/orders_v1/) on databricks (catalog: `sas2026`, schema: `orders_v1`)
 2. Add the two objects `orders` and `line_items` with all their properties and logical types
 3. Run the tests, and fix any wrong types
 4. Verify tests can also fail: change `physicalType` of `customerEmailAddress` to `integer` (or remove a column), then run the tests again. Revert afterwards.
@@ -26,7 +26,8 @@ Make sure all tests pass before continuing, then:
 
     ```yaml
     relationships:
-      - to: orders.order_id
+      - type: foreignKey
+        to: orders.order_id
     ```
 
 ## Add Quality Checks
@@ -99,11 +100,11 @@ Make sure all tests pass before continuing, then:
 
 - Use the **export** command to create an HTML documentation of the data contract:
   ```
-  datacontract export --format html orders-v1.odcs.yaml > orders-v1.odcs.html
+  datacontract export --format html orders_v1.odcs.yaml > orders_v1.odcs.html
   ```
 - Export to SQL DDL ([exports](https://cli.datacontract.com/#export)):
   ```
-  datacontract export --format sql orders-v1.odcs.yaml
+  datacontract export --format sql orders_v1.odcs.yaml
   ```
 - Use the **catalog** command to create a data contract catalog:
   ```
