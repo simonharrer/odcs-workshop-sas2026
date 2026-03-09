@@ -25,13 +25,29 @@ schema:
     logicalType: string
     required: true
     primaryKey: true
+    quality:
+    - type: text
+      description: Must be a valid UUID
+    - type: sql
+      description: Ensure order_id is unique
+      query: SELECT COUNT(*) FROM (SELECT order_id FROM orders_v1.orders GROUP BY order_id HAVING COUNT(*) > 1);
+      mustBe: 0
   - name: order_timestamp
     physicalType: timestamp
     logicalType: date
+    quality:
+    - type: text
+      description: Must not be in the future
+    - type: sql
+      description: Ensure order_timestamp is not in the future
+      query: SELECT COUNT(*) FROM orders_v1.orders WHERE order_timestamp > CURRENT_TIMESTAMP();
+      mustBe: 0
   - name: order_total
     physicalType: bigint
     logicalType: integer
     quality:
+    - type: text
+      description: Order total in cents, must be non-negative
     - type: sql
       description: Ensure order_total is non-negative
       query: SELECT COUNT(*) FROM orders_v1.orders WHERE order_total < 0;
@@ -39,6 +55,13 @@ schema:
   - name: customer_id
     physicalType: string
     logicalType: string
+    quality:
+    - type: text
+      description: Must be a non-empty alphanumeric identifier
+    - type: sql
+      description: Ensure customer_id is not empty
+      query: SELECT COUNT(*) FROM orders_v1.orders WHERE customer_id IS NULL OR customer_id = '';
+      mustBe: 0
   - name: customer_email_address
     physicalType: string
     logicalType: string
@@ -46,10 +69,23 @@ schema:
     classification: confidential
     examples: ['test394@example.org', 'test4757@example.org']
     quality:
+    - type: text
+      description: Must be a valid email address
     - type: sql
       description: Ensure email addresses contain @
       query: SELECT COUNT(*) FROM orders_v1.orders WHERE customer_email_address NOT LIKE '%@%';
       mustBe: 0
+  quality:
+  - type: text
+    description: Orders table must not be empty
+  - type: sql
+    description: Ensure orders table has data
+    query: SELECT COUNT(*) FROM orders_v1.orders;
+    mustBeGreaterThan: 0
+  - type: sql
+    description: Ensure every order has at least one line item
+    query: SELECT COUNT(*) FROM orders_v1.orders o LEFT JOIN orders_v1.line_items li ON o.order_id = li.order_id WHERE li.order_id IS NULL;
+    mustBe: 0
 - name: line_items
   physicalType: table
   logicalType: object
@@ -60,6 +96,13 @@ schema:
     logicalType: string
     required: true
     primaryKey: true
+    quality:
+    - type: text
+      description: Must be a valid UUID
+    - type: sql
+      description: Ensure lines_item_id is unique
+      query: SELECT COUNT(*) FROM (SELECT lines_item_id FROM orders_v1.line_items GROUP BY lines_item_id HAVING COUNT(*) > 1);
+      mustBe: 0
   - name: order_id
     physicalType: string
     logicalType: string
@@ -70,7 +113,20 @@ schema:
   - name: sku
     physicalType: string
     logicalType: string
+    quality:
+    - type: text
+      description: Must be a non-empty product SKU
+    - type: sql
+      description: Ensure sku is not empty
+      query: SELECT COUNT(*) FROM orders_v1.line_items WHERE sku IS NULL OR sku = '';
+      mustBe: 0
   quality:
+  - type: text
+    description: Line items table must not be empty
+  - type: sql
+    description: Ensure line_items table has data
+    query: SELECT COUNT(*) FROM orders_v1.line_items;
+    mustBeGreaterThan: 0
   - type: sql
     description: Ensure every line_items.order_id exists in orders
     query: SELECT COUNT(*) FROM orders_v1.line_items li LEFT JOIN orders_v1.orders o ON li.order_id = o.order_id WHERE o.order_id IS NULL;
