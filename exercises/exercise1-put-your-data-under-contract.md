@@ -4,7 +4,8 @@ Open the [Data Contract Editor](https://editor.datacontract.com) for all steps b
 
 ## Getting Started
 
-1. Go to [editor.datacontract.com](https://editor.datacontract.com) and create a new data contract
+1. Go to [editor.datacontract.com](https://editor.datacontract.com) and create a new data contract. Use the **Form** editor to get started.
+   - Set the contract name to `Orders`, ID to `orders_v1`, version to `1.0.0`, and status to `draft`
 2. Set up the server connection: type `databricks`, catalog `sas2026`, schema `orders_v1`
 3. Look at the data under [`orders_v1`](/data/orders_v1/) and add the two objects `orders` and `line_items` with all their properties and logical types
 4. Run the tests, and fix any wrong types
@@ -14,16 +15,15 @@ Open the [Data Contract Editor](https://editor.datacontract.com) for all steps b
 
 Make sure all tests pass before continuing, then:
 
-6. Set `version` to `1.0.0` and `status` to `active`
-7. Add a `description` with `purpose` (e.g., "Order data for analytics and reporting") and `limitations`
-8. Add `tags`, e.g., `['orders', 'ecommerce']`
-9. Mark `customer_email_address` with `classification: confidential` (it's PII)
-10. Add `examples` for `customer_email_address` based on the JSON data files, e.g., `examples: ['test394@example.org']`
-11. Make `customer_email_address` a required field: `required: true` — run the tests again
+6. Add a `description` with `purpose` (e.g., "Order data for analytics and reporting") and `limitations`
+7. Add `tags`, e.g., `['orders', 'ecommerce']`
+8. Mark `customer_email_address` with `classification: confidential` (it's PII)
+9. Add `examples` for `customer_email_address` based on the JSON data files, e.g., `examples: ['test394@example.org']`
+10. Make `customer_email_address` a required field: `required: true` — run the tests again
 
 ## Define Relationships
 
-12. Add a `relationship` from `line_items.order_id` to `orders.order_id` to express the foreign key
+11. Add a `relationship` from `line_items.order_id` to `orders.order_id` to express the foreign key
 
     ```yaml
     relationships:
@@ -33,7 +33,7 @@ Make sure all tests pass before continuing, then:
 
 ## Add Quality Checks
 
-13. Add a SQL quality check to ensure that `customer_email_address` contains an `@` sign (find invalid rows):
+12. Add a SQL quality check to ensure that `customer_email_address` contains an `@` sign (find invalid rows):
 
     ```yaml
     quality:
@@ -43,7 +43,7 @@ Make sure all tests pass before continuing, then:
         mustBe: 0
     ```
 
-14. Add more constraints (if time allows):
+13. Add more constraints (if time allows):
     - Every `order_id` in `line_items` must exist in `orders`
     - `order_total` must be greater than or equal to 0
     - Think of your own additional constraints
@@ -67,7 +67,7 @@ Make sure all tests pass before continuing, then:
 
 ## Add Ownership
 
-15. Add a `team` and `support` channel:
+14. Add a `team` and `support` channel:
 
     ```yaml
     team:
@@ -83,7 +83,7 @@ Make sure all tests pass before continuing, then:
 
 ## Add SLA Properties
 
-16. Define service-level expectations:
+15. Define service-level expectations:
 
     ```yaml
     slaProperties:
@@ -96,6 +96,10 @@ Make sure all tests pass before continuing, then:
         unit: d
         description: Data updated daily
     ```
+
+## Publish
+
+16. Your contract is complete — set `status` to `active` to publish it!
 
 ## Bonus
 

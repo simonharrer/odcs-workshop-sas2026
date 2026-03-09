@@ -15,3 +15,8 @@ For the bonus tasks using the Data Contract CLI, installation scripts are availa
 - [ODCS Docs](https://bitol-io.github.io/open-data-contract-standard/)
 - [ODCS Source (GitHub)](https://github.com/bitol-io/open-data-contract-standard)
 - [Data Contract CLI (GitHub)](https://github.com/datacontract/datacontract-cli)
+
+## Trainers
+
+- [Simon Harrer](https://www.linkedin.com/in/simonharrer/)
+- [Arif Wider](https://www.linkedin.com/in/arifwider/)
