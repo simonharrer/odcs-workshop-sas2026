@@ -1,0 +1,77 @@
+version: 1.0.0
+kind: DataContract
+apiVersion: v3.1.0
+id: orders_v1
+name: orders_v1
+status: active
+domain: ecommerce
+description:
+  purpose: Order data for analytics and reporting
+  limitations: Contains PII (customer email addresses)
+tags: ['orders', 'ecommerce']
+servers:
+- server: databricks
+  type: databricks
+  catalog: sas2026
+  schema: orders_v1
+schema:
+- name: orders
+  physicalType: table
+  logicalType: object
+  physicalName: orders
+  properties:
+  - name: order_id
+    physicalType: string
+    logicalType: string
+    required: true
+    primaryKey: true
+  - name: order_timestamp
+    physicalType: timestamp
+    logicalType: date
+  - name: order_total
+    physicalType: bigint
+    logicalType: integer
+    quality:
+    - type: sql
+      description: Ensure order_total is non-negative
+      query: SELECT COUNT(*) FROM orders_v1.orders WHERE order_total < 0;
+      mustBe: 0
+  - name: customer_id
+    physicalType: string
+    logicalType: string
+  - name: customer_email_address
+    physicalType: string
+    logicalType: string
+    required: true
+    classification: confidential
+    examples: ['test394@example.org', 'test4757@example.org']
+    quality:
+    - type: sql
+      description: Ensure email addresses contain @
+      query: SELECT COUNT(*) FROM orders_v1.orders WHERE customer_email_address NOT LIKE '%@%';
+      mustBe: 0
+- name: line_items
+  physicalType: table
+  logicalType: object
+  physicalName: line_items
+  properties:
+  - name: lines_item_id
+    physicalType: string
+    logicalType: string
+    required: true
+    primaryKey: true
+  - name: order_id
+    physicalType: string
+    logicalType: string
+    required: true
+    relationships:
+    - type: foreignKey
+      to: orders.order_id
+  - name: sku
+    physicalType: string
+    logicalType: string
+  quality:
+  - type: sql
+    description: Ensure every line_items.order_id exists in orders
+    query: SELECT COUNT(*) FROM orders_v1.line_items li LEFT JOIN orders_v1.orders o ON li.order_id = o.order_id WHERE o.order_id IS NULL;
+    mustBe: 0
