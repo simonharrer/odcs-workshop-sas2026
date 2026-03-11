@@ -15,8 +15,10 @@ Save your data contract from [Exercise 1](exercise1-put-your-data-under-contract
 
 ## Plan the Migration
 
+Form teams of two. One person is responsible for v1, the other for v2. Play through the migration process together:
+
 3. Think through the lifecycle of v1 and v2:
-   - Set v1 status to `deprecated` and add an `endOfSupport` SLA property with a concrete date
-   - Set v2 status to `active` once consumers have been notified
-   - Eventually set v1 status to `retired`
+   - The v1 owner: set status to `deprecated` and add an `endOfSupport` SLA property with a concrete date
+   - The v2 owner: set status to `active` once consumers have been notified
+   - The v1 owner: eventually set status to `retired`
    - Who needs to be informed? How would the `support` channels from exercise 1 help here?
