@@ -9,20 +9,20 @@ Open the [Data Contract Editor](https://editor.datacontract.com) for all steps b
 1. Go to [editor.datacontract.com](https://editor.datacontract.com) and create a new data contract. Use the **Form** editor to get started.
    - Set the contract name to `Orders`, ID to `orders_v1`, version to `1.0.0`, and status to `draft`
 2. Set up the server connection: type `databricks`, catalog `sas2026`, schema `orders_v1`
-3. Look at the data under [`orders_v1`](/data/orders_v1/) and add the two objects `orders` and `line_items` with all their properties and logical types.
+3. Look at the data under [`orders_v1`](/data/orders_v1/) and add the two schemas `orders` and `line_items` with all their properties and logical types.
 
-   > **Hint:** Each property needs a `logicalType` (the abstract type like `string`, `integer`, `date`) and a `physicalType` (the actual database type like `string`, `bigint`, `date`). Here are the columns you should find:
+   > **Hint:** Each property needs a `logicalType` (the abstract type like `string`, `integer`, `timestamp`) and a `physicalType` (the actual database type like `string`, `bigint`, `timestamp`). Here are the columns you should find:
    >
-   > | Object | Property | logicalType | physicalType |
-   > |--------|----------|-------------|--------------|
-   > | `orders` | `order_id` | `integer` | `bigint` |
-   > | `orders` | `order_timestamp` | `date` | `date` |
-   > | `orders` | `order_total` | `number` | `double` |
-   > | `orders` | `customer_email_address` | `string` | `string` |
-   > | `line_items` | `line_item_id` | `integer` | `bigint` |
-   > | `line_items` | `order_id` | `integer` | `bigint` |
-   > | `line_items` | `product_name` | `string` | `string` |
-   > | `line_items` | `product_price` | `number` | `double` |
+   > | Schema | Property | physicalType |
+   > |--------|----------|--------------|
+   > | `orders` | `order_id` | `string` |
+   > | `orders` | `order_timestamp` | `timestamp` |
+   > | `orders` | `order_total` | `bigint` |
+   > | `orders` | `customer_id` | `string` |
+   > | `orders` | `customer_email_address` | `string` |
+   > | `line_items` | `lines_item_id` | `string` |
+   > | `line_items` | `order_id` | `string` |
+   > | `line_items` | `sku` | `string` |
 
 4. Run the tests, and fix any wrong types
 5. Verify tests can also fail: change `physicalType` of `customer_email_address` to `integer` (or remove a column), then run the tests again. Revert afterwards.
